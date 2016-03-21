@@ -1,0 +1,5 @@
+D:\Project\PerfTracker\Cockpit\bin\Debug\Cockpit.dll
+D:\Project\PerfTracker\Cockpit\bin\Debug\Cockpit.pdb
+D:\Project\PerfTracker\Cockpit\obj\Debug\Cockpit.csprojResolveAssemblyReference.cache
+D:\Project\PerfTracker\Cockpit\obj\Debug\Cockpit.dll
+D:\Project\PerfTracker\Cockpit\obj\Debug\Cockpit.pdb

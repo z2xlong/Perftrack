@@ -1,0 +1,4 @@
+D:\Project\PerfTracker\Cockpit\bin\Release\Cockpit.dll
+D:\Project\PerfTracker\Cockpit\bin\Release\Cockpit.pdb
+D:\Project\PerfTracker\Cockpit\obj\Release\Cockpit.dll
+D:\Project\PerfTracker\Cockpit\obj\Release\Cockpit.pdb

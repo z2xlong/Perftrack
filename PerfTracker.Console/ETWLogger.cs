@@ -32,6 +32,8 @@ namespace PerfTracker
         {
             if (PerfviewIsRunning())
                 return;
+
+            ClearAppDataTemp();
             //if (_recentCall.AddMinutes(10) > DateTime.Now)
             //return;
 
@@ -64,6 +66,15 @@ namespace PerfTracker
         {
             Process[] proc = Process.GetProcessesByName("perfview");
             return proc.Length > 0;
+        }
+
+        static void ClearAppDataTemp()
+        {
+            string temp = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Temp");
+            foreach (string dir in Directory.GetDirectories(temp, "perfview", SearchOption.AllDirectories))
+            {
+                Directory.Delete(dir, true);
+            }
         }
     }
 }
