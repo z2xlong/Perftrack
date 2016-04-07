@@ -1,11 +1,13 @@
-D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.exe.config
-D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.exe
-D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.pdb
-D:\Project\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.exe
-D:\Project\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.pdb
 C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.exe.config
 C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.exe
 C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.pdb
 C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.exe
 C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.pdb
 C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.Console.csprojResolveAssemblyReference.cache
+D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.exe.config
+D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.exe
+D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\PerfTracker.pdb
+D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\CommandLine.dll
+D:\Project\PerfTracker\PerfTracker.Console\bin\Debug\CommandLine.xml
+D:\Project\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.exe
+D:\Project\PerfTracker\PerfTracker.Console\obj\Debug\PerfTracker.pdb

@@ -14,32 +14,31 @@ namespace PerfTracker
 {
     public class ETWLogger
     {
-        //DateTime _recentCall = DateTime.MinValue;
         static string _localIp = GetLocalIPAddress();
-        static string _cmdArgsPattern = @"collect /LogFile=""{0}"" /BufferSizeMB=500 /CircularMB=1000 /merge /zip /DotNetAlloc /DotNetAllocSampled /MaxCollectSec:300 /AcceptEULA {1}";
+        static string _cmdArgsPattern = @"collect /LogFile=""{0}"" /BufferSizeMB=1000 /CircularMB=1000 /merge /zip /DotNetAlloc /DotNetAllocSampled /AcceptEULA {1} /MaxCollectSec:{2}";
 
         string _perfView, _etlPath, _logFile;
+        int _maxCollectSec;
 
-        public ETWLogger(string perfViewPath, string etlPath)
+        public ETWLogger(string perfViewPath, string etlPath) : this(perfViewPath, etlPath, 600) { }
+
+        public ETWLogger(string perfViewPath, string etlPath, int maxCollectSec)
         {
             _perfView = Path.Combine(perfViewPath, "perfview.exe");
             _etlPath = etlPath;
             _logFile = Path.Combine(_etlPath, string.Format("PerfViewCollect_{0}.log", _localIp));
+            _maxCollectSec = maxCollectSec;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Log(object sender, PerfEventArgs e)
         {
             if (PerfviewIsRunning())
                 return;
 
             ClearAppDataTemp();
-            //if (_recentCall.AddMinutes(10) > DateTime.Now)
-            //return;
 
-            //_recentCall = DateTime.Now;
-
-            string fileToken = e.CounterName + "_" + e.Threashold.ToString();
+            DateTime now = DateTime.Now;
+            string fileToken = e.CounterName + "_" + e.Threashold.ToString() + "_" + now.ToString("yyyyMMddHH");
             foreach (var f in Directory.GetFiles(_etlPath, "*.zip"))
             {
                 FileInfo fi = new FileInfo(f);
@@ -47,8 +46,8 @@ namespace PerfTracker
                     return;
             }
 
-            string etlfile = Path.Combine(_etlPath, string.Format("{0}_{1}_{2}_{3}.etl", fileToken, e.Count.ToString(), DateTime.Now.ToString("yyyyMMddHHmmss"), _localIp));
-            Process.Start(_perfView, string.Format(_cmdArgsPattern, _logFile, etlfile));
+            string etlfile = Path.Combine(_etlPath, string.Format("{0}{1}_{2}_{3}.etl", fileToken, now.ToString("mmss"), e.Count.ToString("N0"), _localIp));
+            Process.Start(_perfView, string.Format(_cmdArgsPattern, _logFile, etlfile, _maxCollectSec.ToString()));
         }
 
         static string GetLocalIPAddress()

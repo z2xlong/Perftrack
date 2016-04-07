@@ -4,5 +4,7 @@ C:\Users\zhuzu\Documents\Visual Studio 2015\Projects\PerfTracker\PerfTracker.Con
 D:\Project\PerfTracker\PerfTracker.Console\bin\Release\PerfTracker.exe.config
 D:\Project\PerfTracker\PerfTracker.Console\bin\Release\PerfTracker.exe
 D:\Project\PerfTracker\PerfTracker.Console\bin\Release\PerfTracker.pdb
+D:\Project\PerfTracker\PerfTracker.Console\bin\Release\CommandLine.dll
+D:\Project\PerfTracker\PerfTracker.Console\bin\Release\CommandLine.xml
 D:\Project\PerfTracker\PerfTracker.Console\obj\Release\PerfTracker.exe
 D:\Project\PerfTracker\PerfTracker.Console\obj\Release\PerfTracker.pdb

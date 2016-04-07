@@ -1,141 +1,77 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
 using Microsoft.VisualBasic.Devices;
 
 namespace PerfTracker
 {
     public class Tracker
     {
-        readonly int _sleepIntMs, _cpu, _amem, _loh;
         Process _process;
+        readonly Options _opt;
         readonly string _processName, _userName;
-        readonly bool _echo;
         readonly ulong _totalMbMems;
+        double _lastUsedMem;
+        PerformanceCounter avMemCounter, cpuCounter, loh;
 
         public EventHandler<PerfEventArgs> PerfOverThreshold;
 
-        public Tracker(int pId, int intSec, int cpu, int amem, int loh, bool echo = false)
+        public Tracker(Options opt)
         {
-            _totalMbMems = getPhysicalMemory() / 1024 / 1024;
+            _opt = opt;
 
-            _process = Process.GetProcessById(pId);
+            _process = Process.GetProcessById(_opt.ProcessId);
             _processName = _process.ProcessName;
-            _userName = ProcessUtility.GetProcessOwner(pId);
+            _userName = ProcessUtility.GetProcessOwner(_opt.ProcessId);
 
-            _sleepIntMs = intSec * 1000;
-            _cpu = cpu;
-            _amem = amem;
-            _loh = loh;
-            _echo = echo;
+            avMemCounter = new PerformanceCounter("Memory", "Available MBytes"); ;
+            cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            loh = GetLohPerfCounter();
+
+            _totalMbMems = getPhysicalMemory() / 1024 / 1024;
         }
 
-        public void CollectCounters()
+        public bool CollectCounters()
         {
-            int failed = 0;
-            PerformanceCounter memCounter = new PerformanceCounter("Memory", "Available MBytes"); ;
-            PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            PerformanceCounter loh = GetLohPerfCounter();
+            DetectMemory(avMemCounter.NextValue());
+            DetectEvent("Process", "CPU", _opt.Cpu, cpuCounter.NextValue());
 
-            while (true)
+            if (_process != null && !_process.HasExited)
             {
-                if (_process != null && !_process.HasExited)
+                try
                 {
-                    try
-                    {
-#if DEBUG
-                        Console.WriteLine("Process id : {0}, Process Name : {1}, User Name: {2}", _process.Id, _processName, _userName);
-#endif
-                        DetectLoh(loh.NextValue());
-                        failed = 0;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Tracking is broken since {0} : {1}", ex.GetType().ToString(), ex.Message);
-                    }
+                    DetectEvent("CLR", "LohPercent", _opt.Loh, (loh.NextValue() / 1024 / 1024 / _totalMbMems) * 100);
                 }
-                else if (failed < 10)
+                catch (Exception ex)
                 {
-                    failed += 1;
-
-#if DEBUG
-                    Console.WriteLine("Original Process has exited, retry {0} times.", failed);
-#endif
-
-                    if (ProcessUtility.TryGetProcess(_processName, _userName, out _process))
-                        loh = GetLohPerfCounter();
-                }
-                else
-                {
-                    Console.WriteLine("Process {0} with user name {1} has exited.", _processName, _userName);
-                    break;
-                }
-
-                DetectCPU(cpuCounter.NextValue());
-                DetectMem(memCounter.NextValue());
-
-                Thread.Sleep(_sleepIntMs);
-            }
-        }
-
-        void DetectCPU(double cpuPercent)
-        {
-            var cp = cpuPercent;
-
-            if (_echo)
-                Console.WriteLine(string.Format("CPU: {0}", cp.ToString("N0")));
-
-            for (int i = 90; i >= _cpu; i -= 10)
-            {
-                if (cp >= i)
-                {
-                    FirePerf("Process", "CPU", i, cp);
-                    break;
+                    Console.WriteLine("Tracking is broken since {0} : {1}", ex.GetType().ToString(), ex.Message);
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        void DetectLoh(double lohBytes)
+        void DetectMemory(double avaliableMem)
         {
-            var lohPercent = Math.Round((lohBytes / 1024 / 1024 / _totalMbMems) * 100, 2);
+            var usedmem = _totalMbMems - avaliableMem;
 
-            if (_echo)
-                Console.WriteLine(string.Format("LOH Percent: {0}", lohPercent.ToString()));
+            if (_lastUsedMem > 0)
+                DetectEvent("Process", "UsedMemDropPercent", 10, (_lastUsedMem / usedmem - 1) * 100);
+            DetectEvent("Process", "UsedMemPercent", _opt.UsedMemoryPercent, (usedmem / _totalMbMems) * 100);
 
-            for (int i = 40; i >= _loh; i -= 5)
-            {
-                if (lohPercent >= i)
-                {
-                    FirePerf("CLR", "LohPercent", i, lohPercent);
-                    break;
-                }
-            }
+            _lastUsedMem = usedmem;
         }
 
-        void DetectMem(double memMB)
+        void DetectEvent(string category, string name, double threashold, double perf)
         {
-            var memPercent = Math.Round((memMB / _totalMbMems) * 100, 2);
+            if (_opt.Echo)
+                Console.WriteLine(string.Format("{0}: {1}", name, perf.ToString("N0")));
 
-            if (_echo)
-                Console.WriteLine(string.Format("Available Memory Percent: {0}", memPercent.ToString()));
-
-            for (int i = _amem; i >= 0; i -= 10)
+            if (perf >= threashold)
             {
-                if (memPercent <= i)
-                {
-                    FirePerf("Process", "AvaMemPercent", i, memPercent);
-                    break;
-                }
-            }
-        }
-
-        void FirePerf(string category, string name, double threashold, double count)
-        {
-            EventHandler<PerfEventArgs> handler = PerfOverThreshold;
-            if (handler != null)
-            {
-                handler(this, new PerfEventArgs(category, name, threashold, count));
+                EventHandler<PerfEventArgs> handler = PerfOverThreshold;
+                if (handler != null)
+                    handler(this, new PerfEventArgs(category, name, threashold, perf));
             }
         }
 
@@ -148,9 +84,6 @@ namespace PerfTracker
         PerformanceCounter GetLohPerfCounter()
         {
             string instance = ProcessUtility.GetManagedPerformanceCounterInstanceName(_process);
-#if DEBUG
-            Console.WriteLine("Performance Counter Instance name is {0}", instance);
-#endif
             return new PerformanceCounter(".NET CLR Memory", "Large Object Heap size", instance);
         }
     }
