@@ -25,7 +25,6 @@ namespace PerfTracker
 
             avMemCounter = new PerformanceCounter("Memory", "Available MBytes"); ;
             cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-            loh = GetLohPerfCounter();
 
             _totalMbMems = getPhysicalMemory() / 1024 / 1024;
         }
@@ -39,10 +38,14 @@ namespace PerfTracker
             {
                 try
                 {
+                    if (loh == null)
+                        loh = GetLohPerfCounter();
+
                     DetectEvent("CLR", "LohPercent", _opt.Loh, (loh.NextValue() / 1024 / 1024 / _totalMbMems) * 100);
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     Console.WriteLine("Tracking is broken since {0} : {1}", ex.GetType().ToString(), ex.Message);
                     return false;
                 }
