@@ -27,7 +27,7 @@ namespace PerfTracker
         [Option('m', "memory", DefaultValue = 60, HelpText = "Memory usage threashold.")]
         public int UsedMemoryPercent { get; set; }
 
-        [Option('l', "loh", DefaultValue = 15, HelpText = ".NET Loh usage threashold.")]
+        [Option('l', "loh", DefaultValue = 7, HelpText = ".NET Loh usage threashold.")]
         public int Loh { get; set; }
 
         [Option('o', "echo", DefaultValue = true, HelpText = "Print details to screen.")]

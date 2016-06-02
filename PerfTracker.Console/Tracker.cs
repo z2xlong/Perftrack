@@ -86,7 +86,8 @@ namespace PerfTracker
 
         PerformanceCounter GetLohPerfCounter()
         {
-            string instance = ProcessUtility.GetManagedPerformanceCounterInstanceName(_process);
+            //string instance = ProcessUtility.GetManagedPerformanceCounterInstanceName(_process);
+            string instance = "_Global_";
             return new PerformanceCounter(".NET CLR Memory", "Large Object Heap size", instance);
         }
     }

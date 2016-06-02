@@ -16,7 +16,7 @@ namespace PerfTracker
     {
         static string _localIp = GetLocalIPAddress();
         static string _cmdArgsPattern = @"collect /LogFile=""{0}"" /BufferSizeMB=1000 /CircularMB=1000 /merge /zip /DotNetAlloc /DotNetAllocSampled /AcceptEULA {1} /MaxCollectSec:{2}";
-
+        // /kernelEvents=default+Thread+ContextSwitch
         string _perfView, _etlPath, _logFile;
         int _maxCollectSec;
 

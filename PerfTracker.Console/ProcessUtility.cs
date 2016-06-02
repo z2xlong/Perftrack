@@ -51,6 +51,10 @@ namespace PerfTracker
                 {
                     // swallow exceptions from non existing instances we tried to read
                 }
+                catch(AccessViolationException)
+                {
+
+                }
 
                 return (id == p.Id) ? instanceName : null;
             }
