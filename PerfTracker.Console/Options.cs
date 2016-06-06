@@ -39,8 +39,14 @@ namespace PerfTracker
             // this without using CommandLine.Text
             //  or using HelpText.AutoBuild
             var usage = new StringBuilder();
-            usage.AppendLine("Perftracker 1.0");
-            usage.AppendLine("Read user manual for usage instructions...");
+            usage.AppendLine("usage: perftracker -p processId -v perfview_loation -e output_location \t\n\t[-i interval_seconds] [-c cpu_usage] [-m memory_usage] [-l loh_usage]");
+            usage.AppendLine("\t\n");
+            usage.AppendLine("optional arguments:");
+            usage.AppendLine("-i\tInterval seconds to collect performance counters, default is 30s.");
+            usage.AppendLine("-c\tCpu usage percent threashold,default is 50%.");
+            usage.AppendLine("-m\tMemory usage percent threashold,default is 60%.");
+            usage.AppendLine("-l\tLoh usage percent threashold,default is 7%.");
+
             return usage.ToString();
         }
     }

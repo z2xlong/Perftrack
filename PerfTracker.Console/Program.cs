@@ -33,7 +33,7 @@ namespace PerfTracker
             }
             else
             {
-                Console.WriteLine(opts.GetUsage());
+                //Console.WriteLine(opts.GetUsage());
                 return -1;
             }
         }
